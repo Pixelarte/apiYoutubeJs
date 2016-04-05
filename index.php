@@ -31,7 +31,15 @@
       <p id="nombre"></p>
       <p id="correo"></p>
       <p id="token"></p>
-      <div id="videoContainer"><h1>Lista de Videos subidos:</h1></div>
+</div>
+
+<!-- lista de videos-->
+<div id="videoContainer" style="display:none;">
+      <h1>Lista de Videos subidos:</h1>
+      <div id="totalVideos"></div>
+      <div id="videos">
+      </div>      
+      <p><a href="#" id="prev" style="display:none;">prev</a> / <a href="#" id="next" style="display:none;">next</a></p>
 </div>
 
 

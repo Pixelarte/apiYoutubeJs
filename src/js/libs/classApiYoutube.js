@@ -7,7 +7,9 @@ function classApiYoutube(data)
 	this.OAUTH2_SCOPES = data.scope;
 
 	this.playlistId;
-	this.playlistItems;
+	//this.playlistItems;
+	this.playlist;
+	this.tokenPaginacion;
 
 
 	// consulta si estas conectado y los permisos
@@ -65,7 +67,10 @@ function classApiYoutube(data)
 	   		})
    	}
 
-   	this.channelsList=function(){
+   	this.channelsList=function(_max,_token){
+
+   		_root.tokenPaginacion=_token;
+
    		var request = gapi.client.youtube.channels.list({
 	      // Setting the "mine" request parameter's value to "true" indicates that
 	      // you want to retrieve the currently authenticated user's channel.
@@ -76,18 +81,29 @@ function classApiYoutube(data)
 	    request.execute(function(response) {
 	      if ('error' in response) {
 	        console.log(response.error.message);
+	        _root.errorListVideoYoutube();
 	      } else {
 			// saco el id del canal
 			_root.playlistId = response.result.items[0].contentDetails.relatedPlaylists.uploads;
 			// ahora sacaremos la lista
-			var request = gapi.client.youtube.playlistItems.list({
-			    playlistId: _root.playlistId,
+			var options={
+				playlistId: _root.playlistId,
 			    part: 'snippet',
-			    maxResults: 10
-			});
+			    maxResults: _max
+			}
+			
+			if(_root.tokenPaginacion){
+				options.pageToken = _root.tokenPaginacion;
+			}
+
+			var request = gapi.client.youtube.playlistItems.list(options);
+
 			request.execute(function(response) {
-				 _root.playlistItems = response.result.items;
-				  if (_root.playlistItems) {
+
+				 _root.playlist=response.result;
+
+				 //_root.playlistItems = response.result.items;
+				  if (_root.playlist.items) {
 				  	  _root.listVideoYoutube();
 				   } else {
 				      _root.errorListVideoYoutube();
@@ -101,9 +117,7 @@ function classApiYoutube(data)
 }
 
 
-
 // dispatcher event's
-
 classApiYoutube.prototype = new DispatcherAPiYoutube();
  
 // cuando te conectas

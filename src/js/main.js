@@ -103,24 +103,61 @@ function initDatosUsuario(){
 function initListaVideos(){
 	$('#listaVideo').click(function(){
 		$('#listaVideo').hide();
-		Youtube.channelsList();
+		Youtube.channelsList(2);
 		Youtube.addEventlistener("listVideoYoutube",listVideoYoutube);
 		Youtube.addEventlistener("errorListVideoYoutube",errorListVideoYoutube);
 	});
+
+	function listVideoYoutube(){
+		try{
+			$('#next').unbind("click",nextListVideo);
+			$('#prev').unbind("click",prevListVideo);
+		}catch(e){}
+
+		$("#totalVideos").html("total de videos :"+Youtube.playlist.pageInfo.totalResults); //total videos
+
+		$("#videoContainer").show();
+
+		$.each(Youtube.playlist.items, function(index, item) { //recorremos la lista de videos
+			var title = item.snippet.title;
+	  		var videoId = item.snippet.resourceId.videoId;
+	  		var thumbs = item.snippet.thumbnails.default.url;
+	  		$('#videos').append('<p><img id="imagen" src="'+thumbs+'"></p><p><a target="_blank" href="https://www.youtube.com/watch?v='+videoId+'">' + title + '</a></p>');
+		});
+
+		if(Youtube.playlist.nextPageToken){// si es tru, hay mas videos y debes contruir la paginacion
+			$("#next").show();
+			$('#next').bind("click",nextListVideo);
+		}else{
+			$("#next").hide();
+		}
+
+		if(Youtube.playlist.prevPageToken){// si es tru, hay mas videos y debes contruir la paginacion
+			$("#prev").show();
+			$('#prev').bind("click",prevListVideo);
+		}else{
+			$("#prev").hide();
+		}
+	}
+	function nextListVideo(){
+		$("#videos").html("");
+		Youtube.channelsList(2,Youtube.playlist.nextPageToken);// llamo ala misma funcion de la lisata de videos pero le paso el token de la pagina siguiente
+		
+	}
+	function prevListVideo(){
+		$("#videos").html("");
+		Youtube.channelsList(2,Youtube.playlist.prevPageToken);// llamo ala misma funcion de la lisata de videos pero le paso el token de la pagina anterior
+		
+	}
+	
+
+
+	function errorListVideoYoutube(){
+		$('#videoContainer').html('no tienes videos subidos a tu canal');
+	}
 }
 
-function listVideoYoutube(){
-	$.each(Youtube.playlistItems, function(index, item) {
-		var title = item.snippet.title;
-  		var videoId = item.snippet.resourceId.videoId;
-  		var thumbs = item.snippet.thumbnails.default.url;
-  		$('#videoContainer').append('<p><img id="imagen" src="'+thumbs+'"><a target="_blank" href="https://www.youtube.com/watch?v='+videoId+'">' + title + '</a></p>');
-	});
-}
 
-function errorListVideoYoutube(){
-	$('#videoContainer').html('no tienes videos subidos a tu canal');
-}
 
 
 
