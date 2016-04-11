@@ -152,7 +152,7 @@ function classApiYoutube(data)
 	    });
    	}
 
-   	this.initPlayer=function(_selector,_width,_height,_autoplay,_controls){
+   	this.initPlayer=function(_selector,_width,_height,_options){
    		var tag = document.createElement('script');
 		tag.src = "https://www.youtube.com/iframe_api";
       	var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -161,10 +161,12 @@ function classApiYoutube(data)
       	_root.optionsPlayer={selector:_selector,options:{
       		  height: _height,
 	          width: _width,
-	          playerVars: { 'autoplay': _autoplay, 'controls': _controls },
+	          playerVars: _options,
 	          events: {
 	            'onReady': readyPlayerYoutube,
-	            'onStateChange': changePlayerYoutube
+	            'onStateChange': changePlayerYoutube,
+	            'onPlaybackQualityChange': onPlayerPlaybackQualityChange,
+	            'onError': onPlayerError
 	          }
 	      }
 	    }
@@ -186,6 +188,12 @@ function readyPlayerYoutube(){
 }
 function changePlayerYoutube(){
 	Youtube.changePlayerVideoYoutube();
+}
+function onPlayerPlaybackQualityChange(){
+	Youtube.changeQualityPlayerVideoYoutube();
+}
+function onPlayerError(){
+	Youtube.errorPlayerVideoYoutube();
 }
 
 
@@ -230,6 +238,15 @@ classApiYoutube.prototype.readyPlayerVideoYoutube=function(){
 // error lista de video
 classApiYoutube.prototype.changePlayerVideoYoutube=function(){
 	this.dispatch("changePlayerVideoYoutube");
+}
+// player change quality
+classApiYoutube.prototype.changeQualityPlayerVideoYoutube=function(){
+	this.dispatch("changeQualityPlayerVideoYoutube");
+}
+
+// error lista de video
+classApiYoutube.prototype.errorPlayerVideoYoutube=function(){
+	this.dispatch("errorPlayerVideoYoutube");
 }
 
 function DispatcherAPiYoutube(){

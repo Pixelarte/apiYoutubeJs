@@ -120,11 +120,24 @@ function initListaVideos(){
 			$("#totalVideos").html("total de videos :"+Youtube.playlist.pageInfo.totalResults); //total videos
 			
 			//init player para reproducir video en iframe
-			Youtube.initPlayer("player","480","320",1,0);
+			//https://developers.google.com/youtube/player_parameters?playerVersion=HTML5#start
+			Youtube.initPlayer(
+					"player",
+					"480",
+					"320",
+					{
+						'showinfo':1,
+						'controls':1
+					}
+				);
 			// ready para comenzar a utilizar
 			Youtube.addEventlistener("readyPlayerVideoYoutube",readyPlayerVideoYoutube);
 			// cuando cambian alguna propiedad
 			Youtube.addEventlistener("changePlayerVideoYoutube",changePlayerVideoYoutube);
+			// cuando cambian la calidad del player
+			Youtube.addEventlistener("changeQualityPlayerVideoYoutube",changeQualityPlayerVideoYoutube);
+			// error en el player iframe
+			Youtube.addEventlistener("errorPlayerVideoYoutube",errorPlayerVideoYoutube);
 			
 			// consultar lista video
 			Youtube.VideosList(maxResultsVideos);
@@ -197,6 +210,8 @@ function initListaVideos(){
 		//Youtube.player.getVolume()// muestra el volumen actual
 		//Youtube.player.setSize // en pixeles modifica el iframe
 
+		Youtube.player.setVolume(100); // seteamos el volumen
+
 		$("#btnStop").on("click",function(e){
 			e.preventDefault();
 			Youtube.player.stopVideo();
@@ -213,8 +228,14 @@ function initListaVideos(){
 	function changePlayerVideoYoutube(){
 		console.log("change");
 	}
+	function changeQualityPlayerVideoYoutube(){
+		console.log("change quality");
+	}
 
 
+	function errorPlayerVideoYoutube(){
+		$('#playerContainer').html('ocurrio un error al consultar a la api de youtube, vuelve a intentarlo algun dia de este año.');
+	}
 	function errorListVideoYoutube(){
 		$('#videoContainer').html('ocurrio un error al consultar a la api de youtube, vuelve a intentarlo algun dia de este año.');
 	}
