@@ -29,3 +29,4 @@
 * [scope de google "permisos"](https://developers.google.com/identity/protocols/googlescopes#plusDomainsv1).
 * [Api javascript client](https://github.com/google/google-api-javascript-client).
 * [Iframe reference](https://developers.google.com/youtube/iframe_api_reference#Playback_status).
+* [PlayerVars reproductor iframe](https://developers.google.com/youtube/player_parameters?playerVersion=HTML5#start).
