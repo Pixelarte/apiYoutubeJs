@@ -27,3 +27,5 @@
 * [Client ID](https://console.developers.google.com/apis/credentials?project).
 * [Ejemplo Api JavaScript](https://developers.google.com/youtube/v3/code_samples/javascript).
 * [scope de google "permisos"](https://developers.google.com/identity/protocols/googlescopes#plusDomainsv1).
+* [Api javascript client](https://github.com/google/google-api-javascript-client).
+* [Iframe reference](https://developers.google.com/youtube/iframe_api_reference#Playback_status).

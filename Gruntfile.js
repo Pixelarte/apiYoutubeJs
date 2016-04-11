@@ -12,8 +12,8 @@ module.exports = function(grunt) {
 
     uglify: {
           options: {
-            beautify: true/*,
-            mangle: {
+            beautify: true,
+            /*mangle: {
                 toplevel: true
             }*/
           },
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
         livereload: true
       },
       scripts: {
-        files: ['src/js/*.js','src/js/game/*.js'],
+        files: ['src/js/*.js'],
         tasks: ['newer:uglify'],
         options: {
             spawn: false
