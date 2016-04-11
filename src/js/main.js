@@ -1,4 +1,5 @@
 var Youtube;
+var maxResultsVideos=2;
 
 window.onload = init;
 
@@ -102,27 +103,52 @@ function initDatosUsuario(){
 // solicitud lista video
 function initListaVideos(){
 	$('#listaVideo').click(function(){
+		
 		$('#listaVideo').hide();
-		Youtube.channelsList(2);
-		Youtube.addEventlistener("listVideoYoutube",listVideoYoutube);
+		//consultamos si existen videos
+		Youtube.VideosResponse();
+		// si sucede algun error en las consultas lo controlamos aca.
 		Youtube.addEventlistener("errorListVideoYoutube",errorListVideoYoutube);
+		// resputa consulta si existen videos del usuario.
+		Youtube.addEventlistener("initContainerVideos",initContainerVideos);
 	});
 
-	function listVideoYoutube(){
+	//init contenedor de video, debes preparar paginacion , player , etc.
+	function initContainerVideos(data){
+		$("#videoContainer").show();
+		if(data){// si trae true es por que existen videos.
+			$("#totalVideos").html("total de videos :"+Youtube.playlist.pageInfo.totalResults); //total videos
+			
+			//init player para reproducir video en iframe
+			Youtube.initPlayer("player","480","320",1,0);
+			// ready para comenzar a utilizar
+			Youtube.addEventlistener("readyPlayerVideoYoutube",readyPlayerVideoYoutube);
+			// cuando cambian alguna propiedad
+			Youtube.addEventlistener("changePlayerVideoYoutube",changePlayerVideoYoutube);
+			
+			// consultar lista video
+			Youtube.VideosList(maxResultsVideos);
+			// init lista videos
+			Youtube.addEventlistener("initVideosList",initVideosList);
+
+		}else{
+			$("#totalVideos").html("total de videos :"+Youtube.playlist.pageInfo.totalResults); //total videos
+		}
+	}
+
+	//traes la lista de videos para mostrarlos
+	function initVideosList(){
 		try{
 			$('#next').unbind("click",nextListVideo);
 			$('#prev').unbind("click",prevListVideo);
 		}catch(e){}
-
-		$("#totalVideos").html("total de videos :"+Youtube.playlist.pageInfo.totalResults); //total videos
-
-		$("#videoContainer").show();
-
+	
 		$.each(Youtube.playlist.items, function(index, item) { //recorremos la lista de videos
 			var title = item.snippet.title;
 	  		var videoId = item.snippet.resourceId.videoId;
 	  		var thumbs = item.snippet.thumbnails.default.url;
-	  		$('#videos').append('<p><img id="imagen" src="'+thumbs+'"></p><p><a target="_blank" href="https://www.youtube.com/watch?v='+videoId+'">' + title + '</a></p>');
+	  		$('#videos').append('<p><img id="'+videoId+'" src="'+thumbs+'"></p><p><a target="_blank" href="https://www.youtube.com/watch?v='+videoId+'">' + title + '</a></p>');
+	  		$('#'+videoId+'').bind("click",playVideo);
 		});
 
 		if(Youtube.playlist.nextPageToken){// si es tru, hay mas videos y debes contruir la paginacion
@@ -139,21 +165,58 @@ function initListaVideos(){
 			$("#prev").hide();
 		}
 	}
+
+	function playVideo(e){
+		$("#playerContainer").show();
+		var option={
+			'videoId':e.currentTarget.id
+			//'mediaContentUrl':String,
+			//'startSeconds': 50,
+            //'endSeconds': 60,
+            //'suggestedQuality': 'large'
+		}
+		Youtube.play(option);
+	}
+
 	function nextListVideo(){
 		$("#videos").html("");
-		Youtube.channelsList(2,Youtube.playlist.nextPageToken);// llamo ala misma funcion de la lisata de videos pero le paso el token de la pagina siguiente
-		
+		Youtube.VideosList(maxResultsVideos,Youtube.playlist.nextPageToken);// llamo ala misma funcion de la lisata de videos pero le paso el token de la pagina siguiente
 	}
 	function prevListVideo(){
 		$("#videos").html("");
-		Youtube.channelsList(2,Youtube.playlist.prevPageToken);// llamo ala misma funcion de la lisata de videos pero le paso el token de la pagina anterior
-		
+		Youtube.VideosList(maxResultsVideos,Youtube.playlist.prevPageToken);// llamo ala misma funcion de la lisata de videos pero le paso el token de la pagina anterior
 	}
-	
+
+	function readyPlayerVideoYoutube(){
+		//https://developers.google.com/youtube/iframe_api_reference#Playback_status
+		//Youtube.player.seekTo(seconds:Number, allowSeekAhead:Boolean)
+		//Youtube.player.clearVideo();// limpia contenedor player luego del stop
+		//Youtube.player.mute();
+		//Youtube.player.unMute();
+		//Youtube.player.setVolume(volume:Number) // 1/100
+		//Youtube.player.getVolume()// muestra el volumen actual
+		//Youtube.player.setSize // en pixeles modifica el iframe
+
+		$("#btnStop").on("click",function(e){
+			e.preventDefault();
+			Youtube.player.stopVideo();
+		});
+		$("#btnPause").on("click",function(e){
+			e.preventDefault();
+			Youtube.player.pauseVideo();
+		});
+		$("#btnPlay").on("click",function(e){
+			e.preventDefault();
+			Youtube.player.playVideo();
+		});
+	}
+	function changePlayerVideoYoutube(){
+		console.log("change");
+	}
 
 
 	function errorListVideoYoutube(){
-		$('#videoContainer').html('no tienes videos subidos a tu canal');
+		$('#videoContainer').html('ocurrio un error al consultar a la api de youtube, vuelve a intentarlo algun dia de este año.');
 	}
 }
 
