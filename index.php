@@ -37,12 +37,17 @@
 <div id="videoContainer" style="display:none;">
       <h1>Lista de Videos subidos:</h1>
       <div id="totalVideos"></div>
-      <div id="videos">
-      </div>      
+      <div id="videos"></div>      
+      <div id="playerContainer" style="display:none;">
+        <div id="player"></div>
+        <div id="control">
+              <a href="#" id="btnPlay">play</a>
+              <a href="#" id="btnPause">pause</a>
+              <a href="#" id="btnStop">stop</a>
+        </div>
+      </div>
       <p><a href="#" id="prev" style="display:none;">prev</a> / <a href="#" id="next" style="display:none;">next</a></p>
 </div>
-
-
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="assets/js/main.min.js"></script>
